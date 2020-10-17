@@ -22,7 +22,17 @@ class Worker {
      * console.log(cpuInfo.manufacturer);
      */
 
+    // Systeminfo-Objekte auslesen
+    let memoryInfo = await SysInfo.mem();
+    let processInfo = await SysInfo.processes();
+    let cpuTempInfo = await SysInfo.cpuTemperature();
+    let batteryInfo = await SysInfo.battery();
 
+    // Einzelne Sensorwerte aus den Objekten auslesen
+    let memoryFree = memoryInfo.free;
+    let processCount = processInfo.running;
+    let cpuTemp = cpuTempInfo.main;
+    let capacityProcent = (batteryInfo.currentcapacity / batteryInfo.maxcapacity) * 100;
 
 
 
@@ -38,7 +48,44 @@ class Worker {
      * HttpClient.post("http://demoapi.invalid.com/api", { json: payload });
      */
 
+    // URL des Endpunkts auf der SensorAPI
+    let url = "https://sensorapi.juergdanuser.ch/api/TestUser/sensordata";
 
+    // Free Memory
+    let payloadMemoryFree = {
+      id: null, // ID wird von der SensorAPI gesetzt
+      data: memoryFree,
+      timestamp: null, // Zeitstempel wird von der SensorAPI gesetzt
+      sensorid: 11
+    };
+    HttpClient.post(url, { json: payloadMemoryFree });
+
+    // Process Count
+    let payloadProcessCount = {
+      id: null,
+      data: processCount,
+      timestamp: null,
+      sensorid: 10
+    };
+    HttpClient.post(url, { json: payloadProcessCount });
+
+    // CPU Temperatur
+    let payloadCpuTemp = {
+      id: null,
+      data: cpuTemp,
+      timestamp: null,
+      sensorid: 9
+    };
+    HttpClient.post(url, { json: payloadCpuTemp });
+
+    // Battery Capacity
+    let payloadCapacity = {
+      id: null,
+      data: capacityProcent,
+      timestamp: null,
+      sensorid: 12
+    };
+    HttpClient.post(url, { json: payloadCapacity });
 
 
     console.log("...end");
